@@ -13,13 +13,14 @@ cS.dbg = 111;
 %%  Directories
 
 % Base program directory
-cS.baseDir = fullfile('/users/lutz', 'dropbox', 's2015', 'econ821');
+cS.baseDir = fullfile('/users/lutz', 'dropbox', 's2015', 'econ821', 'progs');
 cS.sharedDir = fullfile(cS.baseDir, 'shared');
 cS.olg2dDir  = fullfile(cS.baseDir, 'olg2d');
-cS.growthDir = fullfile(cS.baseDir, 'growth', 'progs');
+cS.growthDir = fullfile(cS.baseDir, 'growth');
+cS.exampleDir = fullfile(cS.baseDir, 'matlab_examples');
 
 % Data (reside in special locations on my computer)
-cS.pwtDir = fullfile(cS.baseDir, 'pwt');
+% cS.pwtDir = fullfile(cS.baseDir, 'pwt');
 cS.wdiDir = fullfile(cS.baseDir, 'wdi');
 cS.barroLeeDir = fullfile(cS.baseDir, 'barro_lee');
 
