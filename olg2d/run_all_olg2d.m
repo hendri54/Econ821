@@ -13,7 +13,7 @@ function run_all_olg2d(calNo)
 % ----------------------------------
 
 cS = const_olg2d(calNo);
-saveFigures = 1;
+
 
 % Make directories (just once)
 if 0
@@ -28,16 +28,7 @@ if 0
 end
 
 
-% % Set model parameters
-% olg2dS = cal_set_olg2d(calNo, dbg);
-% % Load calibrated parameters
-% paramS = cal_load_olg2d(calNo, dbg);
-
-% Show Euler deviation
-show_ee_dev_olg2d(saveFigures, calNo);
-
-
-if 01
+if 0
    % Solve household problem
    % (for purposes of illustration only)
    saveGuesses = 1;
@@ -49,29 +40,35 @@ if 01
 end
 
 
-% % ****  Calibration  ****
-% % Calibrate model parameters for one experiment.
-% if 01
-%    expNo = 0;
-%    cal_comp_olg2d(calNo, expNo, dbg);
-%    %return;
-% end
-% 
-% 
-% % *** Compute the steady state ***
-% % For illustration only. cal_comp_olg2d already did that
-% if 0
-%    expNo = 0;
-%    bg_comp_olg2d(calNo, expNo, dbg);
-% end
-% 
-% 
-% % ****  Compute tax experiments  ****
-% if 0
-%    % Capital tax experiment
-%    taxExpNo = 1;
-%    tax_exper_olg2d(calNo, taxExpNo, dbg);
-% end
+%%  Calibration 
+% Calibrate model parameters for one experiment.
+if 01
+   cal_comp_olg2d(calNo);
+   %return;
+end
 
+
+% *** Compute the steady state ***
+% For illustration only. cal_comp_olg2d already did that
+if 0
+   bg_comp_olg2d(calNo, cS.expBase);
+   
+   % Show Euler deviation
+   show_ee_dev_olg2d(saveFigures, calNo);
+end
+
+
+% ****  Compute tax experiments  ****
+if 0
+   tax_exper_olg2d(calNo);
+end
+
+
+%% Test functions
+if 1
+   t_var_save_olg2d;
+   t_cal_tech_olg2d;
+end
 
 end
+   

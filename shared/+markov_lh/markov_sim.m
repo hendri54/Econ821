@@ -62,6 +62,7 @@ cumTrProbM = cumTrProbM';
 
 
 %%  Iterate over dates
+% Here one could call random_lh.rand_discrete instead
 
 idxM = zeros([nInd, T]);
 

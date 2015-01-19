@@ -4,6 +4,9 @@ function cS = const_olg2d(calNo)
 
 cS = const_821;
 
+cS.dbg = 111;
+% Baseline experiment
+cS.expBase = 1;
 
 
 %%  Fixed model params
@@ -72,9 +75,19 @@ end
 
 %% Directories
 
-cS.progDir = fullfile(cS.olg2dDir, 'progs');
-cS.outDir  = fullfile(cS.olg2dDir, 'out');
-cS.matDir  = fullfile(cS.olg2dDir, 'mat');
+cS.baseDir = cS.olg2dDir;
+cS.progDir = cS.baseDir;
+cS.outDir  = fullfile(cS.baseDir, 'out');
+cS.matDir  = fullfile(cS.baseDir, 'mat');
+
+% Prefixes for file names
+cS.calPrefix = sprintf('c%03i_', calNo);
+
+
+%% Variable names
+
+% Calibrated parameters
+cS.vParams = 1;
 
 
 end

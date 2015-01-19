@@ -24,13 +24,13 @@ end
 if nargin < 2
    error('Invalid nargin');
 end
+if ~isequal(size(xM), size(wtInM))
+   error('Size mismatch');
+end
 
 if dbg > 10
    if any(wtInM(:) < 0)
       error('Negative weights');
-   end
-   if ~isequal(size(xM), size(wtInM))
-      error('Size mismatch');
    end
 end
 

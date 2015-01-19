@@ -1,61 +1,64 @@
-function tax_exper_olg2d(calNo, taxExpNo, dbg);
+function tax_exper_olg2d(calNo)
 % Run a tax experiment.
 % Plot results
-
-% IN:
-%  calNo
-%     Parameters to use
-%  taxExpNo
-%     Specifies tax experiment
-%  dbg
-
 % --------------------------------------
 
-% Load parameters
-cal_load_olg2d(calNo, dbg);
+expNo = 1;
+cS = const_olg2d(calNo);
+expS = exp_set_olg2d(cS.expBase);
+saveFigures = 1;
 
-labelFontSize = const_olg2d('labelFontSize', dbg);
-titleFontSize = const_olg2d('titleFontSize', dbg);
-saveFigures   = const_olg2d('saveFigures',   dbg);
-figOptS       = const_olg2d('figOptS', dbg);
+% Capital tax experiment
+expNoV = expS.capTaxExperV;
+nx = length(expNoV);
 
+% Allocate storage for results
+kV = zeros(1, nx);
+yV = zeros(1, nx);
+rv = nan(1, nx);
+cYV = nan(1, nx);
+cOV = nan(1, nx);
+taxV = zeros(1, nx);
 
-if taxExpNo == 1
-   % Capital tax experiment
-   expNoV = 0 : 9;
-   nx = length(expNoV);
-
-   % Allocate storage for results
-   kV = zeros(1, nx);
-   yV = zeros(1, nx);
-   taxV = zeros(1, nx);
-
-   % Compute each steady state
-   for ix = 1 : nx
-      expS = exp_set_olg2d(expNoV(ix), dbg);
-      taxV(ix) = expS.tauR;
-      [kV(ix), yV(ix), r, wY, cY, cO] = bg_comp_olg2d(calNo, expNoV(ix), dbg);
-   end
-
-   % Plot y and k against tax rates
-   plot( taxV, yV ./ yV(1) .* 100, 'ko-', ...
-         taxV, kV ./ kV(1) .* 100, 'r+-' );
-   grid on;
-   xlabel('Capital tax rate',   'FontSize', labelFontSize);
-   ylabel('Output and capital', 'FontSize', labelFontSize);
-   title('Capital tax experiments',  'FontSize', titleFontSize);
-   legend('Output', 'Capital',  0);
-
-   if saveFigures == 1
-      outDir = const_olg2d('outDir', dbg);
-      figName = [outDir, 'fig_cap_tax_c', sprintf('%03i', calNo)];
-      exportfig(gcf, figName, figOptS);
-   end
-   pause_print(0);
-
-else
-   error('Invalid taxExpNo');
+% Compute each steady state
+for ix = 1 : nx
+   expS = exp_set_olg2d(expNoV(ix));
+   taxV(ix) = expS.tauR;
+   [kV(ix), yV(ix), rV(ix), ~, cYV(ix), cOV(ix)] = bg_comp_olg2d(calNo, expNoV(ix));
 end
 
 
-% *******  eof  *******
+%% Plot y and k against tax rates
+
+fh = figures_lh.new(cS.figOptS, 1);
+hold on;
+plot(taxV, yV ./ yV(1), '-');
+plot(taxV, kV ./ kV(1), '--');
+
+hold off;
+xlabel('Capital tax rate');
+ylabel('Output and capital');
+legend({'Output', 'Capital'});
+figures_lh.format(fh, 'line', cS);
+
+figName = fullfile(cS.outDir, [cS.calPrefix, 'cap_tax_yk']);
+figures_lh.fig_save_lh(figName, saveFigures, 0, cS.figOptS);
+
+
+%% Plot interest rate, cOld/cY
+
+fh = figures_lh.new(cS.figOptS, 1);
+hold on;
+plot(taxV, rV ./ rV(1), '-');
+plot(taxV, cOV ./ cYV, '--');
+
+hold off;
+xlabel('Capital tax rate');
+legend({'r', 'cOld / cY'});
+figures_lh.format(fh, 'line', cS);
+
+figName = fullfile(cS.outDir, [cS.calPrefix, 'cap_tax_rc']);
+figures_lh.fig_save_lh(figName, saveFigures, 0, cS.figOptS);
+
+
+end

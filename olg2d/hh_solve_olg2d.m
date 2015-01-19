@@ -1,4 +1,4 @@
-function [cY, cO] = hh_solve_olg2d(wY, wO, r, saveGuesses, paramS, cS)
+function [cY, cO, saving] = hh_solve_olg2d(wY, wO, r, saveGuesses, paramS, cS)
 % Solve the household problem
 %{
 % IN:
@@ -20,7 +20,9 @@ function [cY, cO] = hh_solve_olg2d(wY, wO, r, saveGuesses, paramS, cS)
 %}
 % --------------------------------------
 
-fprintf('\nSolving household problem\n');
+if saveGuesses == 1
+   fprintf('\nSolving household problem\n');
+end
 
 % This is used to plot Euler equation deviations only.
 global hhDevS
@@ -46,7 +48,8 @@ optS = optimset('fzero');
 % We could pass them as individual arguments, but that is less
 % convenient.
 inputS.r    = r;
-inputS.W    = wY + wO ./ (1+r);
+inputS.wY   = wY;
+inputS.wOld = wO;
 inputS.sigma  = cS.sigma;
 inputS.beta = paramS.beta;
 inputS.dbg  = cS.dbg;
@@ -58,16 +61,13 @@ inputS.saveGuesses = saveGuesses;
 % cFloor is a small constant. Avoids trouble with huge
 % marginal utilities when c is extremely small.
 cLow = cS.cFloor;
-cHigh = 0.999 * inputS.W;
+cHigh = 0.999 * (inputS.wY + inputS.wOld ./ (1 + inputS.r));
 
 
 %% Search for a zero of Euler equation deviation
 
 % This command does all the work!
 hhDevS.n = 0;
-% Note that fzero passes inputS to the deviation function. That is,
-% for each c guess, fzero calls
-%     hh_dev_olg2d(cGuess, inputS)
 [cY, fVal, exitFlag] = fzero(@deviation, [cLow, cHigh], optS);
 
 % Did fzero converge?
@@ -76,14 +76,19 @@ if exitFlag < 0
    warning('fzero failed to converge');
 end
 
+% Cap consumption, so households cannot save negative amounts
+cY = min(cY, 0.99 .* wY);
 
 
 % Compute cO from budget constraint
-cO = (1 + r) * (inputS.W - cY);
-fprintf('\nDone. Solution %.3f / %.3f \n', cY, cO);
+[cO, saving] = hh_budget_olg2d(cY, inputS.wY, inputS.wOld, inputS.r);
+if saveGuesses == 1
+   fprintf('\nDone. Solution cY %.3f  cOld %.3f \n', cY, cO);
+end
+
 
 % Directly verify that Euler equation deviation is small
-if 1
+if cY < 0.95 * wY
    % Marginal utility today
    muY = ces_util_821(cY, inputS.sigma, cS.dbg);
    % RHS of Euler equation
@@ -115,8 +120,8 @@ end
 
 
 %% Nested: deviation function
-   function dev = deviation(guess)
-      dev = hh_dev_olg2d(guess, inputS);
+   function [dev, cOld, saving] = deviation(guess)
+      [dev, ~, cOld, saving] = hh_dev_olg2d(guess, inputS);
    end
 
 

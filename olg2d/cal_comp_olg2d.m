@@ -1,173 +1,177 @@
-function cal_comp_olg2d(calNo, expNo, dbg);
+function cal_comp_olg2d(calNo)
 % Calibrate steady state
-
-% IN:
-%  calNo
-%     Determines parameter set to use
-%  expNo
-%     Determines policy parameters to use
-
+%{
+IN:
+ calNo
+    Determines parameter set to use
+ expNo
+    Determines policy parameters to use
+%}
 % ----------------------------------
 
 % This global structure is used in the deviation function
 global calDevS
 
-if nargin ~= 3
-   error('Invalid number of input arguments');
-end
-
+cS = const_olg2d(calNo);
+expNo = cS.expBase;
+% Set experiment variables, such as tax rates
+expS = exp_set_olg2d(expNo);
 % Plot sequence of fzero guesses?
-plotGuesses = 1;
+plotGuesses = 01;
+saveFigures = 01;
 calDevS.n = 0;
 
-% Set exogenous parameters
-olg2dS = cal_set_olg2d(calNo, dbg);
+fprintf('\nCalibrating olg2d model\n');
 
-% Load parameters (guesses)
-paramS = cal_load_olg2d(calNo, dbg);
 
-% Set experiment variables, such as tax rates
-expS = exp_set_olg2d(expNo, dbg);
 
-% Calibrate technology parameters to match
+%% Calibrate technology parameters to match
 % interest rate and wage rate
-[paramS.A, paramS.ddk] = cal_tech_olg2d(olg2dS.tgKY, olg2dS.tgIntRate, ...
-   olg2dS.tgWageYoung, olg2dS.capShare, expS.tauR, expS.tauW, dbg);
-cal_save_olg2d(calNo, paramS, dbg);
+
+[paramS.A, paramS.ddk] = cal_tech_olg2d(cS.tgKY, cS.tgIntRate, ...
+   cS.tgWageYoung, cS.capShare, expS.tauR, expS.tauW, cS.dbg);
 
 
 % Fix k = K/L at level consistent with target K/Y
-k = (paramS.A * olg2dS.tgKY) ^ (1 / (1-olg2dS.capShare));
+k = (paramS.A * cS.tgKY) ^ (1 / (1-cS.capShare));
 
+
+% ***  Check that inputs are recovered
 % Compute factor prices as faced by household
-[y, mpk, mpl] = cobb_douglas_604(k, 1, olg2dS.capShare, paramS.A, dbg);
-r  = mpk .* (1 - expS.tauR) - paramS.ddk;
-wY = mpl .* (1 - expS.tauW);
+% Also check K/Y
+
+[y, mpk, mpl] = prod_fct_olg2d(k, 1, paramS.A, cS.capShare, cS.dbg);
+[r, wY] = hh_prices_olg2d(mpk, mpl, expS.tauR, expS.tauW, paramS.ddk, cS.dbg);
 % Verify that calibration replicates targets
-devV = [r, wY] ./ [olg2dS.tgIntRate, olg2dS.tgWageYoung] - 1;
+devV = [r, wY, k/y] ./ [cS.tgIntRate, cS.tgWageYoung, cS.tgKY] - 1;
 if max(abs(devV)) > 1e-5
-   warnmsg([ mfilename, ':  Large deviations from targets for (r, wY)' ]);
+   warning('Large deviations from targets for (r, wY, k/y)');
    keyboard;
 end
 
 
+%% Calibrate beta
+
 % Prepare input structure for cal_dev_olg2d
-inputS.dbg  = dbg;
-inputS.wY   = olg2dS.tgWageYoung;
-inputS.r    = olg2dS.tgIntRate;
-inputS.wOld = olg2dS.tgWageOld;
+inputS.wY   = cS.tgWageYoung;
+inputS.r    = cS.tgIntRate;
+inputS.wOld = cS.tgWageOld;
 inputS.k    = k;
-inputS.popGrowth = olg2dS.popGrowth;
+inputS.popGrowth = cS.popGrowth;
 inputS.saveGuesses = plotGuesses;
 
 
-% Prepare inputs for equation solver
-optS = optimset('fzero');
-
-betaLow  = 0.9 ^ olg2dS.pdLength;
-betaHigh = 1.1 ^ olg2dS.pdLength;
+betaLow  = 0.9 ^ cS.pdLength;
+betaHigh = 1.1 ^ cS.pdLength;
 
 
-% Plot deviations for a range of beta values
+%% Plot deviations for a range of beta values
 if 1
-   labelFontSize = const_olg2d('labelFontSize', dbg);
-   titleFontSize = const_olg2d('titleFontSize', dbg);
-   saveFigures   = const_olg2d('saveFigures', dbg);
    % Do not save those steps
    inputS.saveGuesses = 0;
 
-   nBeta = 100;
+   nBeta = 50;
    betaV = linspace(betaLow, betaHigh, nBeta);
    calDevV = zeros(1, nBeta);
    cYV = zeros(1, nBeta);
    cOV = zeros(1, nBeta);
+   saveV = zeros(1, nBeta);
    for ib = 1 : nBeta
-      [calDevV(ib), cYV(ib), cOV(ib)] = cal_dev_olg2d(betaV(ib), inputS, olg2dS, paramS);
+      [calDevV(ib), cYV(ib), cOV(ib), saveV(ib)] = dev_wrapper(betaV(ib));
    end
 
-   horLineV = inputS.k .* (1 + olg2dS.popGrowth) .* ones(size(betaV));
-   saveV = inputS.wY - cYV;
-   plot(betaV .^ (1/olg2dS.pdLength), saveV,   'k.-',  ...
-        betaV .^ (1/olg2dS.pdLength), horLineV, 'b-');
+   horLineV = inputS.k .* (1 + cS.popGrowth) .* ones(size(betaV));
+   
+   fh = figures_lh.new(cS.figOptS, (saveFigures == 0));
+   hold on;
+   plot(betaV .^ (1/cS.pdLength), saveV,   '-');
+   plot(betaV .^ (1/cS.pdLength), horLineV, '.-');
+   hold off;
+   
    grid on;
-   xlabel('\beta',   'FontSize', labelFontSize);
-   ylabel('Saving',  'FontSize', labelFontSize);
-   title('Deviations from calibration targets',  'FontSize', titleFontSize);
+   xlabel('beta');
+   ylabel('Saving');
+   figures_lh.format(fh, 'line', cS);
 
    if saveFigures == 1
-      outDir = const_olg2d('outDir', dbg);
-      figName = [outDir, 'fig_cal_dev'];
-      exportfig(gcf, figName, const_olg2d('figOptS', dbg));
+      figName = fullfile(cS.outDir, [cS.calPrefix, 'cal_dev']);
+      figures_lh.fig_save_lh(figName, saveFigures, 0, cS.figOptS);
    end
-   pause_print(0);
+   
 
    % Restore the saveGuesses switch
    inputS.saveGuesses = plotGuesses;
 end
 
-% Search for a zero of deviation from calibration conditions
-[betaN, fVal, exitFlag] = fzero('cal_dev_olg2d', [betaLow, betaHigh], optS, ...
-   inputS, olg2dS, paramS);
+
+%% Search for a zero of deviation from calibration conditions
+
+% Prepare inputs for equation solver
+optS = optimset('fzero');
+
+[betaN, fVal, exitFlag] = fzero(@dev_wrapper, [betaLow, betaHigh], optS);
 
 if exitFlag < 0
-   warnmsg([ mfilename, ':  fzero failed to converge' ]);
+   warning('fzero failed to converge');
    keyboard;
 end
 
 
-% *** Show results ***
 
-[calDev, cY, cOld] = cal_dev_olg2d(betaN, inputS, olg2dS, paramS);
+%% *** Show results ***
 
-disp(' ');
-disp(sprintf( 'Deviation from calibration targets: %f', calDev ));
-disp(sprintf( 'beta  = %5.3f.  Annual beta = %5.3f', betaN, betaN ^ (1/olg2dS.pdLength) ));
+[calDev, cY, cOld] = dev_wrapper(betaN);
+
+fprintf('\nDeviation from calibration targets: %f \n', calDev);
+fprintf('beta  = %5.3f.  Annual beta = %5.3f \n', betaN, betaN ^ (1/cS.pdLength));
 wLifetime = inputS.wY + inputS.wOld / (1 + inputS.r);
-disp(sprintf( 'cY/wY = %5.3f.  cY/W = %5.3f', cY/inputS.wY, cY/wLifetime ));
-disp(sprintf( 'k     = %5.3f.', k));
+fprintf('cY/wY = %5.3f.  cY/W = %5.3f \n', cY/inputS.wY, cY/wLifetime);
+fprintf('k     = %5.3f \n', k);
 
 paramS.beta = betaN;
-cal_save_olg2d(calNo, paramS, dbg);
+var_save_olg2d(paramS, cS.vParams, calNo, expNo);
 
 
-% Plot the search history of fzero
+%% Check that computing the bgp for given parameters recovers targets
+
+[k2, y2, r2, wY2, cY2, cO2] = bg_comp_olg2d(calNo, expNo);
+devV = [k2, y2, r2, wY2, cY2, cO2] - [inputS.k, y, inputS.r, inputS.wY, cY, cOld];
+if max(abs(devV)) > 1e-5
+   warning('Solution not consistent with bgp');
+   keyboard;
+end
+
+
+%% Plot the search history of fzero
+
 if plotGuesses == 1
    n = calDevS.n;
-   optS.fontSize = 12;
-   labelM = repmat(' ', [n, 3]);
-   for i1 = 1 : n
-      labelM(i1,:) = sprintf('%3i', i1);
-   end
 
    % Which steps to plot
    if n > 30
       plotIdxV = [1 : 5,  round(linspace(6, n-6, 20)), n-5 : n];
-      %plotIdxV = [1 : 5,  round(n./2) + [-5 : 5], n-5 : n];
    else
       plotIdxV = 1 : n;
    end
-
-   labelFontSize = const_olg2d('labelFontSize', dbg);
-   titleFontSize = const_olg2d('titleFontSize', dbg);
-   plot_w_labels_lh( calDevS.cYV(plotIdxV), calDevS.devV(plotIdxV), ...
-      labelM(plotIdxV,:), optS, dbg );
-   grid on;
-   xlabel('cY', 'FontSize', labelFontSize);
-   ylabel('Calibration deviation', 'FontSize', labelFontSize);
-   title(['fzero Sequence. ', sprintf('%i steps.', n)], ...
-      'FontSize', titleFontSize);
-
-   saveFigures == const_olg2d('saveFigures', dbg);
-   if saveFigures == 1
-      figOptS = const_olg2d('figOptS', dbg);
-      figName = [const_olg2d('outDir', dbg), sprintf('cal_seq_c%03i', calNo)];
-      exportfig(gcf, figName, figOptS);
+   
+   fh = figures_lh.new(cS.figOptS, 1);
+   hold on;
+   for i1 = plotIdxV(:)'
+      text(calDevS.cYV(i1), calDevS.devV(i1), sprintf('%i', i1));
    end
-   pause_print(0);
+   
+   hold off;
+   xlabel('cY');
+   ylabel('Calibration deviation');
+
+   figName = fullfile(cS.outDir, [cS.calPrefix, sprintf('seq_c%03i', calNo)]);
+   figures_lh.fig_save_lh(figName, saveFigures, 0, cS.figOptS);
 end
 
 
-%disp(mfilename);
-%keyboard;
+%% Nested: deviation wrapper
+   function [dev, cY, cOld, save] = dev_wrapper(betaIn)
+      [dev, cY, cOld, save] = cal_dev_olg2d(betaIn, inputS, paramS, cS);
+   end
 
-% ********  eof  *******
+end

@@ -1,22 +1,25 @@
-function expS = exp_set_olg2d(expNo, dbg);
+function expS = exp_set_olg2d(expNo)
 % Set parameters for policy experiments
 % ----------------------------------------
 
 expS.tauR = 0;
 expS.tauW = 0;
 
-if expNo == 0
+% Capital tax experiments
+expS.capTaxExperV = 2 : 11;
+
+if expNo == 1
    expS.descrStr = 'Default';
 
-elseif expNo >= 1  &  expNo < 10
+elseif ismember(expNo, expS.capTaxExperV)
    % Capital tax experiments
+   tauV = linspace(0.1, 0.8, length(expS.capTaxExperV));
+   expS.tauR = tauV(find(expNo == expS.capTaxExperV));
    expS.descrStr = sprintf('Capital tax %5.1f pct', expS.tauR * 100);
-   expS.tauR = 0.1 * expNo;
    expS.tauW = 0;
 
 else
    error('Invalid expNo');
 end
 
-
-% *** eof ***
+end
