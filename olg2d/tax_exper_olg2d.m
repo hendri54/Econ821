@@ -3,7 +3,6 @@ function tax_exper_olg2d(calNo)
 % Plot results
 % --------------------------------------
 
-expNo = 1;
 cS = const_olg2d(calNo);
 expS = exp_set_olg2d(cS.expBase);
 saveFigures = 1;

@@ -1,7 +1,7 @@
-function run_all_olg2d(calNo)
+function run_all_olg2s(calNo)
 % Run everything in sequence
-% Deterministic two-period OLG model
-
+% Stochastic two-period OLG model
+%{
 % Note:
 %  Switch individual sections on and off by
 %  changing "if 0" to "if 1"
@@ -9,10 +9,10 @@ function run_all_olg2d(calNo)
 % IN:
 %  calNo
 %     Determines which parameters to use
-
+%}
 % ----------------------------------
 
-cS = const_olg2d(calNo);
+cS = const_olg2s(calNo);
 
 
 % Make directories (just once)
@@ -31,11 +31,9 @@ end
 if 0
    % Solve household problem
    % (for purposes of illustration only)
-   saveGuesses = 1;
-   paramS.beta = cS.beta;
-   [cY, cO] = hh_solve_olg2d(cS.tgWageYoung, cS.tgWageOld, ...
-      cS.tgIntRate, saveGuesses, paramS, cS);
-   disp([cY, cO]);
+   paramS = param_set_olg2s(calNo);
+   cyV = hh_solve_olg2s(cS.tgWageYoung, cS.tgWageOld, ...
+      cS.tgIntRate, paramS, cS);
    return;
 end
 
@@ -43,33 +41,28 @@ end
 %%  Calibration 
 % Calibrate model parameters for one experiment.
 if 01
-   cal_comp_olg2d(calNo);
-   % Alternative, simple minded implementation
-   cal_simple_olg2d(calNo);
-   %return;
+   % Very simple minded (inefficient) algorithm
+   cal_comp_olg2s(calNo);
+   % Show bgp results
+   bgp_show_olg2s(calNo, cS.expBase);
+   show_cons_fct_olg2s(calNo, cS.expBase);
 end
 
 
 % *** Compute the steady state ***
-% For illustration only. cal_comp_olg2d already did that
+% For illustration only. cal_comp_olg2s already did that
 if 0
-   bg_comp_olg2d(calNo, cS.expBase);
-   
-   % Show Euler deviation
-   show_ee_dev_olg2d(saveFigures, calNo);
+   bg_comp_olg2s(calNo, cS.expBase);
 end
 
 
-% ****  Compute tax experiments  ****
-if 0
-   tax_exper_olg2d(calNo);
-end
 
 
 %% Test functions
 if 1
-   t_var_save_olg2d;
-   t_cal_tech_olg2d;
+   t_hh_dev_olg2s(calNo);
+   t_hh_solve_olg2s(calNo);
+   t_bg_dev_olg2s(calNo);
 end
 
 end

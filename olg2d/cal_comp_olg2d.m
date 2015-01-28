@@ -131,6 +131,12 @@ fprintf('k     = %5.3f \n', k);
 paramS.beta = betaN;
 var_save_olg2d(paramS, cS.vParams, calNo, expNo);
 
+fieldV = fieldnames(paramS);
+for i1 = 1 : length(fieldV)
+   fprintf('%s = %.3f    ', fieldV{i1}, paramS.(fieldV{i1}));
+end
+fprintf('\n');
+
 
 %% Check that computing the bgp for given parameters recovers targets
 

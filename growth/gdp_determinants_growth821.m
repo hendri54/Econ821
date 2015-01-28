@@ -21,7 +21,8 @@ iyV = var_load_yc_pwt8('csh_i', cS.refYear, wbCodeV);
 %% Plot I/Y against GDP
 
 fh = figures_lh.new(cS.figOptS, 1);
-plot(log(gdpPerWorkerV), iyV, 'o', 'color', cS.colorM(1,:));
+idxV = find(iyV > 0  &  gdpPerWorkerV > 0);
+plot(log(gdpPerWorkerV(idxV)), iyV(idxV), 'o');
 xlabel('log GDP per worker (PPP)');
 ylabel('I/Y');
 figure_format_821(fh, 'line');

@@ -10,9 +10,6 @@ IN:
 OUT:
    idxM
       state for each observation
-
-test this +++++
-copy to 821 +++++
 %}
 
 
@@ -34,6 +31,7 @@ end
 
 %% Main
 
+
 % Cumulative probs
 n = length(probV);
 cumProbV = cumsum(probV);
@@ -44,17 +42,31 @@ cumProbV(n) = 1;
 
 
 % Assign output values
-if length(sizeV) == 2  &&  min(sizeV) == 1
-   % Vector
-   idxM = 1 + sum((uniRandM(:) * ones(1, n)) > (ones([length(uniRandM),1]) * cumProbV(:)'), 2);
+% if length(sizeV) == 2  &&  min(sizeV) == 1
+%    % Vector
+%    idxM = 1 + sum((uniRandM(:) * ones(1, n)) > (ones([length(uniRandM),1]) * cumProbV(:)'), 2);
+% 
+% else
+%    % Matrix of any dim
+%    idxM = ones(size(uniRandM));
+%    for i1 = 1 : (n-1)
+%       idxM(uniRandM > cumProbV(i1)) = i1 + 1;
+%    end
+% end
 
-else
-   % Matrix of any dim
-   idxM = ones(size(uniRandM));
-   for i1 = 1 : (n-1)
-      idxM(uniRandM > cumProbV(i1)) = i1 + 1;
-   end
-end
+
+%% Alternative code (based on gendist.m from file exchange)
+% This is faster than my code for large matrices
+
+[~,idxV] = histc(uniRandM(:)', [0; cumProbV(:)]);
+
+idxM = reshape(idxV, size(uniRandM));
+
+% if ~isequal(idxM, idx2M)
+%    warning('Not equal');
+%    keyboard;
+% end
+
 
 %% Output check
 if dbg > 10
