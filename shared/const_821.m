@@ -17,6 +17,7 @@ cS.baseDir = fullfile('/users/lutz', 'dropbox', 's2015', 'econ821', 'progs');
 cS.sharedDir = fullfile(cS.baseDir, 'shared');
 cS.olg2dDir  = fullfile(cS.baseDir, 'olg2d');
 cS.olg2sDir  = fullfile(cS.baseDir, 'olg2s');
+cS.ogmDir    = fullfile(cS.baseDir, 'olg_mult');
 cS.growthDir = fullfile(cS.baseDir, 'growth');
 cS.exampleDir = fullfile(cS.baseDir, 'matlab_examples');
 

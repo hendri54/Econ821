@@ -91,11 +91,7 @@ if dbg > 10
    validateattributes(cumPctV, {'double'}, {'finite', 'nonnan', 'nonempty', 'real', '>=', 0, ...
       '<=', 1, 'size', [1, n], 'increasing'})
    validateattributes(xSortV, {'double'}, {'finite', 'nonnan', 'nonempty', 'real', ...
-      'size', [1, n], 'increasing'})
-   dV = cumPctV(2:end) - cumPctV(1:end-1);
-   if any(dV <= 0)
-      error('cumPctV not strictly increasing');
-   end
+      'size', [1, n], 'nondecreasing'})
 end
 
 end 
