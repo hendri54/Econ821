@@ -55,7 +55,7 @@ transferV = [zeros(1, cS.aR), ones(1, cS.aD - cS.aR) .* transfer];
 
 % Simulate capital histories from policy function
 % indexed by [ind, age]
-outS.kHistM = sim_hh_ogm(outS.kPolM, inputS.eIdxM, paramS, cS);
+[outS.kHistM, outS.cHistM] = sim_hh_ogm(outS.kPolM, outS.cPolM, inputS.eIdxM, paramS, cS);
 
 
 % Aggregate capital

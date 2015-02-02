@@ -2,6 +2,7 @@ function t_hh_solve_ogm(calNo)
 % ------------------------------
 
 cS = const_ogm(calNo);
+saveFigures = 0;
 paramS = param_derived_ogm([], cS);
 
 paramS.beta = 0.95;
@@ -21,9 +22,6 @@ if 01
    disp(' ');
    disp('Checking properties of cPolM');
    hh_check_cpol_ogm(cPolM, kPolM, R, paramS, cS);
-   
-   % Plot policy function
-   hh_polfct_show(cPolM, kPolM, paramS, cS);
 end
 
 end

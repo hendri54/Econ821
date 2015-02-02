@@ -24,21 +24,18 @@ showConsWealth = 01;
 %% Load parameters and steady state results
 paramS = var_load_ogm(cS.vParams, calNo, expNo);
 bgpS = var_load_ogm(cS.vBgp, calNo, expNo);
-
+bgStatS = var_load_ogm(cS.vBgpStats, calNo, expNo);
 
 
 %%  Wealth distribution
-if 0  % +++++
-   disp(' ');
-   disp('WEALTH DISTRIBUTION');
-   % Compute the wealth distribution
-   % Use these percentile classes
-   pctUbV = [0.5 0.8 0.95 0.99];
-   % Compute Gini
-   gini = gini_weighted( bgpS.kHistM(:), ones([nAge * nSim, 1]), 0, dbg );
-   % Compute fraction held by each percentile class
-   pct_dist_lh(bgpS.kHistM, ones([nAge, nSim]), pctUbV, 1, dbg);
-   disp(sprintf('Wealth Gini: %5.2f', gini));
+if 01
+   fprintf('\nCross-sectional wealth distribution\n');
+   topPctV = [1, 5, 25, 50];
+   topShareV = interp1(bgStatS.wealthPctUbV, bgStatS.wealthCumFrac_pV, 1 - topPctV ./ 100, 'linear');
+   fprintf('Gini: %.2f \n',  bgStatS.giniWealth);
+   for i1 = 1 : length(topShareV)
+      fprintf('Fraction held by top %2i pct: %.1f pct \n',  topPctV(i1),  100 * (1 - topShareV(i1)));
+   end
 end
 
 

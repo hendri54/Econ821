@@ -47,7 +47,7 @@ cS.ddk = 0.05;
 
 % *****  Labor endowments
 
-% cS.leSigma1 = 0.38 ^ 0.5;
+cS.leSigma1 = 0.38 ^ 0.5;
 cS.leShockStd = 0.045 .^ 0.5;
 cS.lePersistence = 0.96;
 % No of std deviations the grid is wide
@@ -60,7 +60,8 @@ cS.nSim = 5e4;
 
 % ***  Government
 
-cS.wageTax = 0.4;
+% Huggett 1996
+cS.wageTax = 0.195 / (1 - 0.06 * 3);
 % Old age transfers / average earnings
 cS.transferEarn = 0.4;
 
@@ -74,7 +75,7 @@ cS.tgIntRate = 0.05;
 cS.tgWage = 1;
 
 % Capital-output ratio
-cS.tgKY = 2.9;
+cS.tgKY = 3;
 
 
 % Size of k grid
@@ -145,5 +146,6 @@ cS.vBgp = 2;
 % Hh policy functions
 cS.vHhPolFct = 3;
 
+cS.vBgpStats = 4;
 
 end

@@ -70,10 +70,10 @@ for i1 = 1 : length(fnV)
 end
 outS.lsHistM = lsHistM;
 
-outS.cHistM = sim_hh_ogm(outS.cPolM, outS.eIdxM, paramS, cS);
-
 var_save_ogm(outS, cS.vBgp, calNo, expNo);
 
+% Compute additional stats
+bg_stats_ogm(calNo);
 
 % Check hh solution
 % hh_check_cpol_ogm(outS.cPolM, outS.kPolM, outS.R, paramS, cS);

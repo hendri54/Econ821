@@ -1,8 +1,12 @@
-function hh_polfct_show(cPolM, kPolM, paramS, cS)
+function hh_polfct_show(saveFigures, calNo, expNo)
 % Show hh policy functions
-% -----------------------------------------------
 
-%% Input check
+
+%% Load
+
+cS = const_ogm(calNo);
+paramS = var_load_ogm(cS.vParams, calNo, expNo);
+bgpS = var_load_ogm(cS.vBgp, calNo, expNo);
 
 
 %% Consumption and saving function
@@ -13,10 +17,10 @@ if 1
    
    for iPlot = 1 : 2
       if iPlot == 1
-         polM = cPolM(:, :, a);
+         polM = bgpS.cPolM(:, :, a);
          polStr = 'c';
       elseif iPlot == 2
-         polM = kPolM(:, :, a);
+         polM = bgpS.kPolM(:, :, a);
          polStr = 'k';
       else
          error('Invalid');
@@ -33,10 +37,10 @@ if 1
 
       xlabel('k');
       ylabel(sprintf('%s(k,e,%i)', polStr, a));
-      legend(legendV)
+      legend(legendV, 'location', 'northwest')
       figure_format_821(fh, 'line');
-      pause;
-      close;
+      figFn = fig_fn_ogm(sprintf('hh_%s_fct', polStr), calNo, expNo);
+      figures_lh.fig_save_lh(figFn, saveFigures, 0, cS.figOptS);
    end
 end
    

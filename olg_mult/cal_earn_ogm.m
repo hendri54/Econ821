@@ -15,9 +15,19 @@ OUT:
 
 [logGridV, trProbM] = ar1_lh.tauchen(cS.nw, cS.lePersistence, cS.leShockStd, 0, cS.leWidth);
 
-% New agents draw from stationary distribution
-prob1V = markov_lh.markov_stationary(trProbM, cS.dbg);
+% New agents draw from an approximate log normal distribution
+% On the grid defined by the AR(1)
+prob1V = distrib_lh.norm_grid_lh(logGridV, logGridV(1)-2, logGridV(end)+2, 0, cS.leSigma1, cS.dbg);
 prob1V = prob1V(:);
+
+% % New agents draw from stationary distribution
+% prob1V = markov_lh.markov_stationary(trProbM, cS.dbg);
+% prob1V = prob1V(:);
+
+
+% Improve scaling
+logGridV = logGridV(:) - logGridV(1) - 1;
+
 
 
 %% Self test

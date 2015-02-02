@@ -1,4 +1,4 @@
-function kHistM = sim_hh_ogm(kPolM, eIdxM, paramS, cS)
+function [kHistM, cHistM] = sim_hh_ogm(kPolM, cPolM, eIdxM, paramS, cS)
 % Simulate a population of households
 %{
 Method:
@@ -29,20 +29,28 @@ if cS.dbg > 10
       'size', [cS.nk,cS.nw,cS.aD]})
 end
 
+computeC = (nargout > 1);
+
 
 %% Simulate capital histories, age by age
-% Not efficient +++
 
 kHistM = nan([nSim, cS.aD]);
 kHistM(:,1) = zeros([nSim, 1]);
-for a = 1 : (cS.aD - 1)
+cHistM = nan([nSim, cS.aD]);
+for a = 1 : cS.aD
    for ie = 1 : cS.nw
       % Find households with labor endowment ie at this age
       idxV = find(eIdxM(:,a) == ie);
       if ~isempty(idxV)
-         % Find next period capital for each individual by interpolation
-         kHistM(idxV, a+1) = interp1(paramS.kGridV(:), kPolM(:,ie,a), ...
-            kHistM(idxV, a), 'linear');
+         if a < cS.aD
+            % Find next period capital for each individual by interpolation
+            kHistM(idxV, a+1) = interp1(paramS.kGridV(:), kPolM(:,ie,a), ...
+               kHistM(idxV, a), 'linear');
+         end
+         if computeC == 1
+            cHistM(idxV, a) = interp1(paramS.kGridV(:), cPolM(:,ie,a), ...
+               kHistM(idxV, a), 'linear');
+         end
       end
    end
 end
@@ -54,7 +62,6 @@ if cS.dbg > 10
 end
 
 
-%keyboard;   % +++++
    
 
 end
