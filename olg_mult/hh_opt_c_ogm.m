@@ -61,6 +61,7 @@ else
       % Interior case
       % Sign switches within grid. Just interpolate
       kPrime = interp1(eeDevV, kPrimeV(kpIdxV), 0, 'linear');
+      %kPrime = interp1qr(eeDevV, kPrimeV(kpIdxV), 0);
       
    else
       % All eeDevV < 0

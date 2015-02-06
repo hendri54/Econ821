@@ -18,6 +18,8 @@ strict = 1;
 result = matrix_lh.is_monotonic(cPolM, 1, strict, 1, cS.dbg);
 if result ~= 1
    warning('cPolM not increasing in k');
+   diffM = diff(cPolM, 1);
+   fprintf('min c change: %f \n',  min(diffM(:)));
 end
 
 % Is k' increasing in wealth?
@@ -25,13 +27,17 @@ strict = 0;
 result = matrix_lh.is_monotonic(kPolM, 1, strict, 1, cS.dbg);
 if result ~= 1
    warning('kPolM not increasing in k');
+   diffM = diff(kPolM, 1);
+   fprintf('min kPrime change: %f \n',  min(diffM(:)));
 end
 
 % Is c increasing in labor endowments during working life?
-strict = 1;
+strict = 0;
 result = matrix_lh.is_monotonic(cPolM(:,:,1 : cS.aR), 2, strict, 1, cS.dbg);
 if result ~= 1
    warning('cPolM not increasing in e');
+   diffM = diff(cPolM, 2);
+   fprintf('min c change: %f \n',  min(diffM(:)));
 end
 
 
@@ -39,9 +45,9 @@ end
 retireAgeV = cS.aR+1 : cS.aD;
 dcPolM = cPolM(:, 2 : cS.nw, retireAgeV) - cPolM(:, 1 : cS.nw - 1, retireAgeV);
 dcMax = max(abs(dcPolM(:)));
-if dcMax > 1e-6
-   error(['cPolM not independent of e during retirement', ...
-      sprintf('dcMax = %f', dcMax)]);
+if dcMax > 1e-3
+   warning('cPolM not independent of e during retirement');
+   fprintf('dcMax = %f \n', dcMax);
 end
 
 

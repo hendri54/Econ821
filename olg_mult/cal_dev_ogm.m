@@ -50,7 +50,7 @@ outS.avgEarn = inputS.wageNet * inputS.L / massWorking;
 transfer = inputS.transferEarn * outS.avgEarn;
 transferV = [zeros(1, cS.aR), ones(1, cS.aD - cS.aR) .* transfer];
 
-[outS.cPolM, outS.kPolM] = hh_solve_ogm(inputS.R, inputS.wageNet, transferV, paramS, cS);
+[outS.cPolM, outS.kPolM, outS.valueM] = hh_solve_vfi_ogm(inputS.R, inputS.wageNet, transferV, paramS, cS);
 
 
 % Simulate capital histories from policy function
@@ -74,6 +74,7 @@ devV = KYdev;
 
 if 1
    fprintf('    beta: %5.4f    KYdev: %5.4f \n', paramS.beta, KYdev);
+   fprintf('    K: %.3f    Y: %.3f \n',  outS.K, outS.Y);
 end
 
 

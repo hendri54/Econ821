@@ -6,7 +6,7 @@ function run_all_ogm(calNo)
 % ----------------------------------
 
 cS = const_ogm(calNo);
-
+saveFigures = 1;
 
 % Make directories (just once)
 if 0
@@ -35,7 +35,7 @@ end
 if 01
    calibr_ogm(calNo);
    % Show bgp results
-   bg_show_ogm(calNo);
+   bg_show_ogm(saveFigures, calNo);
 end
 
 
@@ -44,6 +44,8 @@ end
 %% Test functions
 if 1
    t_misc_ogm(calNo);
+   t_hh_optc_vfi_ogm(calNo);
+   t_hh_solve_vfi_ogm(calNo);
    t_hh_ee_dev_ogm(calNo);
    t_hh_opt_c_ogm(calNo)
    t_hh_solve_age_ogm(calNo);
