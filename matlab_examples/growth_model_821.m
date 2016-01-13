@@ -1,4 +1,4 @@
-function growth_model_821
+function wV = growth_model_821
 %{
 A first pass at solving the optimal growth problem via value function
 iteration.  A more general version is provided in optgrowth.py (QuantEcon).
@@ -13,36 +13,42 @@ Not how much more complicated this is in Matlab relative to Julia
 
 
 % Primitives and grid
-n = 75;
+n = 100;
 alpha = 0.65;
 bet = 0.95;
 grid_max = 2;
 grid_size = 150;
 gridV = 1e-2:(grid_max-1e-6)/(grid_size-1):grid_max;
 
+% Show plot?
+showPlot = 0;
+
 
 
 %% Main
 
-fh = figure;
-hold on;
-
-plot(gridV, v_star(gridV), 'k-');
+if showPlot == 1
+   fh = figure;
+   hold on;
+   plot(gridV, v_star(gridV), 'k-');
+end
 
     
 wV = 5 .* log(gridV) - 25;  % An initial condition -- fairly arbitrary
 tic
 for i1 = 1:n
    wV = bellman_operator(gridV, wV, alpha, bet);
-   if rem(i1, 10) == 0
+   if (showPlot == 1)  &&  (rem(i1, 10) == 0)
       plot(gridV, wV, '-');
    end
 end
 toc
 
-hold off;
-xlabel('k');
-ylabel('w');
+if showPlot == 1
+   hold off;
+   xlabel('k');
+   ylabel('w');
+end
 
 return;
 
@@ -69,6 +75,9 @@ end
 %}
 
 function Tw = bellman_operator(gridV, wV, alpha, bet)
+   optS = optimset('fminbnd');
+   optS.TolX = 1e-6;
+
    % Interpolation object
    Aw = griddedInterpolant(gridV, wV, 'linear');
 
@@ -84,7 +93,7 @@ function Tw = bellman_operator(gridV, wV, alpha, bet)
       if 0
          % Objective function as anonymous function
          dev_fct2 = @(c) (- log(c) - bet * interp1(gridV, wV, k^alpha - c, 'linear'));      
-         [cOpt, fVal, exitFlag] = fminbnd(dev_fct2, cMin, cMax);
+         [cOpt, fVal, exitFlag] = fminbnd(dev_fct2, cMin, cMax, optS);
       elseif 1
          % Using interpolation object (by far the fastest approach)
          dev_fct3 = @(c) (- log(c) - bet * Aw(k^alpha - c));      
