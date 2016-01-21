@@ -1,15 +1,40 @@
-function cS = const_pwt8
-% -----------------------------
+function cS = const_pwt8(verNo)
+% Set constants for one PWT version
+%{
+Works with versions >= 8.0 (that have same format at 8)
+%}
+
+cS.dbg = 111;
+
+validateattributes(verNo, {'double'}, {'finite', 'nonnan', 'nonempty', 'real', 'scalar', '>=', 8})
 
 % % First year with data
 % cS.year1 = 1950;
 % % Last year with data
 % cS.year2 = 1950 + 61;
 
+% List of oil countries that one would often drop
+cS.oilCountryV = {'ARE', 'BHR', 'BRN', 'OMN', 'QAT', 'SAU'};
+
 
 %% Directories
 
-cS.baseDir = '/users/lutz/documents/econ/data/pwt/pwt8/';
+baseDir = '/users/lutz/documents/econ/data/pwt/';
+if verNo == 8
+   verStr = 'pwt8';
+   % Data are a matlab dataset
+   cS.dataFormat = 'mat';
+   cS.dataFileName = 'pwt80.mat';
+elseif verNo == 8.1
+   verStr = 'pwt81';
+   % Data are xlsx
+   cS.dataFormat = 'xlsx'; 
+   cS.dataFileName = 'pwt81.xlsx';
+else
+   error('Invalid');
+end
+
+cS.baseDir = fullfile(baseDir, verStr);
 cS.outDir  = fullfile(cS.baseDir, 'out');
 cS.matDir  = fullfile(cS.baseDir, 'mat');
 cS.progDir  = fullfile(cS.baseDir, 'progs');
@@ -31,6 +56,7 @@ cS.legendFontSize = 12;
 
 %% Variables
 
+% Contains WB codes, country names, years in dataset
 cS.vCountryList = 1;
 
 end

@@ -1,4 +1,4 @@
-function wV = growth_model_821
+function growth_model_821(showPlot)
 %{
 A first pass at solving the optimal growth problem via value function
 iteration.  A more general version is provided in optgrowth.py (QuantEcon).
@@ -8,6 +8,10 @@ Adapted from quant-econ julia code
 Not how much more complicated this is in Matlab relative to Julia
 (because we cannot define an interpolation object to pass to the objective function
 [actually, we could; see griddedInterpolant])
+
+IN
+   showPlot :: Boolean
+      generate a plot with value functions as iterations progress?
 %}
 % --------------------------------------------
 
@@ -20,8 +24,6 @@ grid_max = 2;
 grid_size = 150;
 gridV = 1e-2:(grid_max-1e-6)/(grid_size-1):grid_max;
 
-% Show plot?
-showPlot = 0;
 
 
 

@@ -10,6 +10,7 @@ IN:
 % ----------------------------------
 
 % This global structure is used in the deviation function
+% It stores the search history of the optimization algorithm
 global calDevS
 
 cS = const_olg2d(calNo);

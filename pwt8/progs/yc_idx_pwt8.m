@@ -1,10 +1,13 @@
-function [yrIdxV, cIdxV] = yc_idx_pwt8(yearV, wbCodeV)
+function [yrIdxV, cIdxV] = yc_idx_pwt8(yearV, wbCodeV, cS)
 % Return year and country indices for saved matrices
+%{
+Empty yearV or wbCodeV means: return all values in the data
+%}
 % -----------------------------------------
 
-cS = const_pwt8;
+% cS = const_pwt8;
 
-cListS = var_load_pwt8(cS.vCountryList);
+cListS = var_load_pwt8(cS.vCountryList, cS);
 
 
 %% Year indices

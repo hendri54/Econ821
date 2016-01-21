@@ -1,11 +1,11 @@
-function [fPath, fn] = var_fn_pwt8(varNo)
+function [fPath, fn, fDir] = var_fn_pwt8(varNo, cS)
 %{
 varNo can be string
 for named pwt variables such as RDGPO
 %}
 % ------------------------------------------
 
-cS = const_pwt8;
+% cS = const_pwt8;
 
 if ischar(varNo)
    fn = [varNo, '.mat'];
@@ -15,7 +15,7 @@ else
    fn = sprintf('v%03i.mat', varNo);
 end
 
-
-fPath = fullfile(cS.matDir, fn);
+fDir = cS.matDir;
+fPath = fullfile(fDir, fn);
 
 end

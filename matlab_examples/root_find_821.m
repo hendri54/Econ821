@@ -5,13 +5,13 @@ function root_find_821
 %% Parameters
 
 a = 4;
-xLb = 0;
-xUb = 4;
-n = 100;
 
 
 %% Plot
 if 0
+   xLb = 0;
+   xUb = 4;
+   n = 100;
    xGridV = linspace(xLb, xUb, n);
 
    fh = figure;
@@ -29,6 +29,7 @@ fprintf('Solution: %f \n', xOpt);
 
 
 %% Nested: wrapper
+% It can see the parameter `a`
    function dev = dev_wrapper(x)
       dev = dev_fct(x,a);
    end
@@ -37,6 +38,8 @@ fprintf('Solution: %f \n', xOpt);
 end
 
 
+%% Local: objective function 
+% It cannot see `a`, but it can receive it as an input argument.
 function dev = dev_fct(x, a)
    dev = x .^ 2 - a;
 end

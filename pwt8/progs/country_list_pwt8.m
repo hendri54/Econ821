@@ -1,8 +1,8 @@
-function country_list_pwt8
+function country_list_pwt8(verNo)
 % Diagnostic list of country characteristics
 % -------------------------------------------
 
-cS = const_pwt8;
+cS = const_pwt8(verNo);
 
 outFn = [cS.outDir, 'country_list.txt'];
 fp = fopen(outFn, 'w');
@@ -10,9 +10,9 @@ fp = fopen(outFn, 'w');
 
 %% Load
 
-cListS = var_load_pwt8(cS.vCountryList);
-rgdpeM = var_load_pwt8('rgdpe');
-empM   = var_load_pwt8('emp');
+cListS = var_load_pwt8(cS.vCountryList, cS);
+rgdpeM = var_load_pwt8('rgdpo', cS);
+empM   = var_load_pwt8('emp', cS);
 [ny, nc] = size(empM);
 
 % m = load([cS.baseDir, 'pwt80.mat']);

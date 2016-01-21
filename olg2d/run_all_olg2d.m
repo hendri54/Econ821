@@ -1,17 +1,18 @@
 function run_all_olg2d(calNo)
 % Run everything in sequence
 % Deterministic two-period OLG model
+%{
+Note:
+   Switch individual sections on and off by
+   changing "if 0" to "if 1"
 
-% Note:
-%  Switch individual sections on and off by
-%  changing "if 0" to "if 1"
+IN:
+   calNo
+      Determines which parameters to use
 
-% IN:
-%  calNo
-%     Determines which parameters to use
+%}
 
-% ----------------------------------
-
+% Set parameters / constants
 cS = const_olg2d(calNo);
 
 
