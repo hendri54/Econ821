@@ -1,13 +1,17 @@
 function cal_comp_olg2d(calNo)
 % Calibrate steady state
 %{
+Note:
+   Typically one would save results at the end of the calibration and generate the results in
+   separate functions from saved results.
+
 IN:
  calNo
     Determines parameter set to use
  expNo
     Determines policy parameters to use
 %}
-% ----------------------------------
+
 
 % This global structure is used in the deviation function
 % It stores the search history of the optimization algorithm
@@ -29,26 +33,7 @@ fprintf('\nCalibrating olg2d model\n');
 %% Calibrate technology parameters to match
 % interest rate and wage rate
 
-[paramS.A, paramS.ddk] = cal_tech_olg2d(cS.tgKY, cS.tgIntRate, ...
-   cS.tgWageYoung, cS.capShare, expS.tauR, expS.tauW, cS.dbg);
-
-
-% Fix k = K/L at level consistent with target K/Y
-k = (paramS.A * cS.tgKY) ^ (1 / (1-cS.capShare));
-
-
-% ***  Check that inputs are recovered
-% Compute factor prices as faced by household
-% Also check K/Y
-
-[y, mpk, mpl] = prod_fct_olg2d(k, 1, paramS.A, cS.capShare, cS.dbg);
-[r, wY] = hh_prices_olg2d(mpk, mpl, expS.tauR, expS.tauW, paramS.ddk, cS.dbg);
-% Verify that calibration replicates targets
-devV = [r, wY, k/y] ./ [cS.tgIntRate, cS.tgWageYoung, cS.tgKY] - 1;
-if max(abs(devV)) > 1e-5
-   warning('Large deviations from targets for (r, wY, k/y)');
-   keyboard;
-end
+[k, y, ~, ~, paramS] = cal_technology_olg2d(expS, cS);
 
 
 %% Calibrate beta

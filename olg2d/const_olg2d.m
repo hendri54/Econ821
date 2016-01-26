@@ -16,7 +16,7 @@ cS.expBase = 1;
 % Period length
 cS.pdLength = 30;
 
-cS.popGrowth = 1.01 ^ cS.pdLength - 1;
+cS.popGrowthAnnual = 1.01;
 
 
 % *** Household ***
@@ -40,7 +40,7 @@ cS.capShare = 0.36;
 %%  Calibration targets 
 
 % Interest rate per period, after tax
-cS.tgIntRate = 1.05 ^ cS.pdLength - 1;
+cS.tgIntRateAnnual = 1.05;
 
 % Wage rate when young, after tax
 cS.tgWageYoung = 1;
@@ -49,8 +49,7 @@ cS.tgWageYoung = 1;
 cS.tgWageOld = 0.6;
 
 % Capital-output ratio
-cS.tgKY = 2.9 / cS.pdLength;
-
+cS.tgKYannual = 2.9;
 
 
 
@@ -70,6 +69,15 @@ elseif calNo >= 50
 else
    error('Invalid calNo');
 end
+
+
+%% Derived parameters
+
+% Convert to per period values
+cS.popGrowth = cS.popGrowthAnnual ^ cS.pdLength - 1;
+cS.tgKY = cS.tgKYannual / cS.pdLength;
+cS.tgIntRate = cS.tgIntRateAnnual ^ cS.pdLength - 1;
+
 
 
 

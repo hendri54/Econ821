@@ -22,6 +22,10 @@ OUT:
     To illustrate the importance of transforming Euler equation
    hhDevS
       updated global struct with iteration history
+
+Note:
+   Not efficient. The interpolation of expected marginal utility should be done outside of this
+   function
 %}
 % ---------------------------------------
 

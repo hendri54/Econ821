@@ -68,9 +68,11 @@ end
 
 
 %% Test functions
+% There should be more, of course
 if 1
    t_var_save_olg2d;
    t_cal_tech_olg2d;
+   cal_technology_test_olg2d(calNo);
 end
 
 end

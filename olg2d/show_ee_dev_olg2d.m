@@ -19,6 +19,8 @@ cV = linspace(0.1 * lifeTimeW, 0.5 * lifeTimeW, n);
 
 % Input structure for household problem
 inputS.r     = cS.tgIntRate;
+inputS.wY    = cS.tgWageYoung;
+inputS.wOld  = cS.tgWageOld;
 inputS.W     = lifeTimeW;
 inputS.sigma = cS.sigma;
 inputS.beta  = 0.98;

@@ -9,6 +9,8 @@ Very inefficient!
 cS = const_olg2s(calNo);
 expNo = cS.expBase;
 expS = exp_set_olg2s(expNo);
+% Try to load saved parameters are initial guesses
+%  Note: this does not enforce derived / fixed parameters (should be changed)
 [paramS, success] = var_load_olg2s(cS.vParams, calNo, expNo);
 if success == 0
    paramS = param_set_olg2s(calNo);
@@ -23,7 +25,7 @@ lbV = [0.1, 0.4, 0];
 ubV = [100, 2, 0.9];
 
 optS = optimset('fminsearch');
-[solnV, fVal, exitFlag] = fminsearch(@wrapper, guessV);
+[solnV, fVal, exitFlag] = fminsearch(@wrapper, guessV, optS);
 
 % Unpack params
 paramS.A = solnV(1);

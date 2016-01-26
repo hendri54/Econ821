@@ -2,15 +2,14 @@ function run_all_olg2s(calNo)
 % Run everything in sequence
 % Stochastic two-period OLG model
 %{
-% Note:
-%  Switch individual sections on and off by
-%  changing "if 0" to "if 1"
+Note:
+ Switch individual sections on and off by
+ changing "if 0" to "if 1"
 
-% IN:
-%  calNo
-%     Determines which parameters to use
+IN:
+ calNo
+    Determines which parameters to use
 %}
-% ----------------------------------
 
 cS = const_olg2s(calNo);
 
@@ -60,9 +59,7 @@ end
 
 %% Test functions
 if 1
-   t_hh_dev_olg2s(calNo);
-   t_hh_solve_olg2s(calNo);
-   t_bg_dev_olg2s(calNo);
+   test_all_olg2s(calNo)
 end
 
 end

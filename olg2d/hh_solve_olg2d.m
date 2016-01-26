@@ -1,24 +1,23 @@
 function [cY, cO, saving] = hh_solve_olg2d(wY, wO, r, saveGuesses, paramS, cS)
 % Solve the household problem
 %{
-% IN:
-%  wY, wO
-%     Wage rates when young, old
-%  r
-%     Interest rate
-%  saveGuesses
-%     Save the history of fzero guesses into hhDevS?
-%     For plotting the search pattern of fzero.
-%  cS
-%     Structure with exogenous parameters
-%  paramS
-%     Structure with calibrated parameters
+IN:
+ wY, wO
+    Wage rates when young, old
+ r
+    Interest rate
+ saveGuesses
+    Save the history of fzero guesses into hhDevS?
+    For plotting the search pattern of fzero.
+ cS
+    Structure with exogenous parameters
+ paramS
+    Structure with calibrated parameters
 
-% OUT:
-%  cY, cO
-%     Solutions for consumption when young/old
+OUT:
+ cY, cO
+    Solutions for consumption when young/old
 %}
-% --------------------------------------
 
 if saveGuesses == 1
    fprintf('\nSolving household problem\n');
