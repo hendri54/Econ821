@@ -24,14 +24,14 @@ paramS.eOldV = linspace(1, 2, cS.nw)';
 eMean = sum(paramS.eOldV .* paramS.eOldProbV);
 paramS.eOldV = paramS.eOldV ./ eMean;
 
-validateattributes(paramS.eOldV, {'double'}, {'finite', 'nonnan', 'nonempty', 'real', '>=', 0, 'size', [1, cS.nw]})
+validateattributes(paramS.eOldV, {'double'}, {'finite', 'nonnan', 'nonempty', 'real', '>=', 0, 'size', [cS.nw, 1]})
 checkLH.prob_check(paramS.eOldProbV, 1e-6);
 
 % Young
 paramS.eYV = paramS.eOldV;
 paramS.eYProbV = paramS.eOldProbV;
 
-validateattributes(paramS.eYV, {'double'}, {'finite', 'nonnan', 'nonempty', 'real', '>=', 0, 'size', [1, cS.nw]})
+validateattributes(paramS.eYV, {'double'}, {'finite', 'nonnan', 'nonempty', 'real', '>=', 0, 'size', [cS.nw, 1]})
 checkLH.prob_check(paramS.eYProbV, 1e-6);
 
 

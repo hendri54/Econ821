@@ -21,11 +21,13 @@ if 0
 end
 
 
-if 0
+if 01
    % Solve household problem
    % (for purposes of illustration only)
    paramS = param_derived_ogm([], cS);
+   tic
    cyV = hh_solve_ogm(cS.tgIntRate, cS.tgWage, ones([cS.aD,1]), paramS, cS);
+   toc
    return;
 end
 
@@ -43,6 +45,7 @@ end
 
 %% Test functions
 if 1
+   test_all_ogm(calNo);
    t_misc_ogm(calNo);
    t_hh_optc_vfi_ogm(calNo);
    t_hh_solve_vfi_ogm(calNo);

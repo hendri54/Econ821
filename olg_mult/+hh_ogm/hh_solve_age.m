@@ -1,0 +1,87 @@
+function [cPol_kjM, kPol_kjM, v_kjM] = ...
+   hh_solve_age(a, vPrime_kjM, R, w, transfer, paramS, cS)
+% Solve hh problem for age a
+% Given VALUE function for a+1 (unless a = aD)
+%{
+Restrict k' to lie inside grid
+
+IN:
+ a
+    Current age
+ vPrimeM(ik, ie)
+    Consumption policy function for age a+1 (discounted by beta)
+    Ignored if a = aD
+ transfer
+    Age a transfer
+ R, w
+    Household prices
+
+OUT:
+   cPolM, kPolM
+      Policy functions, indexed by [ik, ie]
+   vM
+      value function
+%}
+
+%% Input check
+
+dbg = cS.dbg;
+
+sizeV = [cS.nk, cS.nw];
+
+if cS.dbg > 10
+   if a < cS.aD
+      validateattributes(vPrime_kjM, {'double'}, {'finite', 'nonnan', 'nonempty', 'real', ...
+         'size', sizeV})
+   end
+end
+
+
+
+%% Main
+
+
+if a == cS.aD
+   % Income by [k,e]
+   y_keM = hh_income_ogm(paramS.kGridV, R, w, transfer, a, paramS, cS);
+   % Eat your income
+   cPol_kjM = y_keM;
+   kPol_kjM = zeros(sizeV);
+   v_kjM = paramS.uFct(cPol_kjM);
+
+else
+   % Allocate space for policy functions
+   cPol_kjM  = nan([cS.nk, cS.nw]);
+   kPol_kjM  = nan([cS.nk, cS.nw]);
+   v_kjM     = nan([cS.nk, cS.nw]);
+
+   % Loop over states [ik, ie]
+   for ie = 1 : cS.nw
+      bConstraint = hh_ogm.bConstraint(a, ie, R, w, transfer, paramS, cS);
+      [kPol_kjM(:,ie), cPol_kjM(:,ie), v_kjM(:,ie)] = econLH.BackwardInduction(paramS.uFct, bConstraint, ...
+         paramS.kGridV, vPrime_kjM, paramS.leTrProbM(ie,:)', dbg);
+      
+      if dbg > 10
+         validateattributes(v_kjM(:, ie), {'double'}, {'finite', 'nonnan', 'nonempty', 'real', 'increasing'})
+      end
+   end % for ie
+end
+
+% Restrict k' to be inside grid
+kPol_kjM = min(paramS.kGridV(end), kPol_kjM);
+
+
+%% Output check
+if cS.dbg > 10
+   validateattributes(cPol_kjM, {'double'}, {'finite', 'nonnan', 'nonempty', 'real', 'positive', ...
+      'size', sizeV})
+   validateattributes(kPol_kjM, {'double'}, {'finite', 'nonnan', 'nonempty', 'real',  ...
+      'size', sizeV})
+   validateattributes(v_kjM, {'double'}, {'finite', 'nonnan', 'nonempty', 'real',  ...
+      'size', sizeV})
+   for j = 1 : cS.nw
+      assert(all(diff(v_kjM(:, j)) > 0));
+   end
+end
+
+end

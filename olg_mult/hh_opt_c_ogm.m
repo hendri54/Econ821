@@ -8,6 +8,8 @@ Budget constraint is: k' = y - c
 
 If hh cannot afford any k': he gets cons floor
 
+Note: This is not efficient
+
 IN:
    a
       age

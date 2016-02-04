@@ -79,7 +79,7 @@ cS.tgKY = 3;
 
 
 % Size of k grid
-cS.nk = 100;
+cS.nk = 50;
 cS.kMin = 0;
 cS.kMax = 100 * cS.tgWage;
 
@@ -99,7 +99,7 @@ elseif calNo == 10
    cS.nw = 5;
    cS.leWidth = 0.1;
    cS.kMax = 25 * cS.tgWage;
-   cS.nk = 100;
+   cS.nk = 50;
 
 elseif calNo >= 50
    % Keep defaults
